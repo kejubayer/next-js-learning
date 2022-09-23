@@ -1,25 +1,35 @@
 import Link from "next/link";
 
-function Index() {
-    return(
+function Index({data}) {
+    console.log(data);
+    return (
         <div>
-            <h2>Blog page</h2>
-            <Link href={"/blog/1"}>
-                <a>
-                    <h3>Blog 1</h3>
-                </a>
-            </Link>
-            <Link href={"/blog/2"}>
-                <a>
-                    <h3>Blog 2</h3>
-                </a>
-            </Link>
-            <Link href={"/blog/3"} replace>
-                <a>
-                    <h3>Blog 3</h3>
-                </a>
-            </Link>
+            <h2>Blog List</h2>
+            {data.map(post => {
+                return (
+                    <div key={post.id}>
+                        <Link href={`/blog/${post.id}`} passHref>
+                            <a>
+                                <h3>{post.title}</h3>
+                            </a>
+                        </Link>
+                        <p>{post.body}</p>
+                        <hr/>
+                    </div>
+                )
+            })}
         </div>
     )
 }
+
+export async function getStaticProps(ctx) {
+    const res = await fetch("https://jsonplaceholder.typicode.com/posts");
+    const data = await res.json();
+    return {
+        props: {
+            data: data.slice(0,3),
+        },
+    };
+}
+
 export default Index;
